@@ -71,7 +71,7 @@ class Tesouro:
     dftit['PU Compra Manha Dia Anterior'] = dftit['PU Compra Manha'].shift(1)
     dftit['Rent'] = (dftit['PU Compra Manha']/dftit['PU Compra Manha Dia Anterior'] -1)*100
 
-    df_mercado = dftit[['Taxa Compra Manha']]
+    df_mercado = dftit[['Taxa Compra Manha']].copy()
     df_mercado['Tx Dia Prefix'] = dftit[['Rent']]
     df_mercado['Tx Dia Prefix Prep'] = df_mercado['Tx Dia Prefix']/100+1
     df_mercado['LTN Mercado'] = (df_mercado['Tx Dia Prefix Prep'].cumprod()-1)*100
@@ -128,7 +128,7 @@ class Tesouro:
     # Calcula rentabilidade acumulada Mercado
     #  1) calcula o ganho percentual dia a dia (ganho percentual da PU atual em relação ao dia anterior; rentabilidade diária)
     #  2) vai acumulando as rentabilidades diárias para calcular a rentabilidade até cada dia
-    df_mercado = dftit[['Taxa Compra Manha']]
+    df_mercado = dftit[['Taxa Compra Manha']].copy()
     df_mercado = df_mercado.reset_index().merge(dfselic.reset_index(), left_on='Data Base', right_on='data')
     df_mercado['Taxa Compra Total'] = df_mercado['Taxa Compra Manha'] + df_mercado['valor']
     df_mercado['Tx Dia'] = df_mercado.apply(lambda x: ( pow( x['Taxa Compra Total']/100+1, 1/252 )  - 1) * 100, axis=1)
