@@ -160,7 +160,8 @@ class Tesouro:
   #####
   ## BUSCA COTACAO ATUAL DOS TITULOS SENDO VENDIDOS NO TESOURO DIRETO
   def busca_tesouro_cotacao_atual(self):
-    with urllib.request.urlopen("https://www.tesourodireto.com.br/json/br/com/b3/tesourodireto/service/api/treasurybondsinfo.json") as url:
+    # "https://www.tesourodireto.com.br/json/br/com/b3/tesourodireto/service/api/treasurybondsinfo.json"
+    with urllib.request.urlopen("https://api.radaropcoes.com/bonds.json") as url:
       data = json.load(url)
     lst = []
     titulos = data['response']['TrsrBdTradgList']
