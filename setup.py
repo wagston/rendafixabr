@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 # Read the contents of your README file
 with open("README.md", "r", encoding="utf-8") as fh:
@@ -10,14 +10,16 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="rendafixabr",
-    version="0.1.0",
+    version="0.1.1",
     author="Wagston Staehler",
     author_email="wagston.staehler@gmail.com",
     description="Funções para coletar dados e gerar análises simples dos títulos públicos brasileiros",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    packages=find_namespace_packages("src", exclude=["docs", "tests"]),
+    package_dir={"": "src"},
     url="https://github.com/wagston/rendafixabr",
-    packages=find_packages(),
+    # packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Financial and Insurance Industry",
