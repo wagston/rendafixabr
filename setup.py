@@ -16,7 +16,7 @@ setup(
     description="Funções para coletar dados e gerar análises simples dos títulos públicos brasileiros",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/wagston/rendafixabr",  # Update with your actual repository URL
+    url="https://github.com/wagston/rendafixabr",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
