@@ -4,11 +4,11 @@ import pandas as pd
 import plotly.graph_objs as go 
 from plotly.subplots import make_subplots
 
-pd.options.display.float_format = '{:,.8f}'.format
-
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import urllib.request, json
 
+pd.options.display.float_format = '{:,.8f}'.format
 
 class Tesouro:
   #####
@@ -25,13 +25,15 @@ class Tesouro:
 
   #####
   ## BUSCA INDICES SELIC, DI e IPCA DO BCB 
-  def busca_bcb_indices(self, indice="selic", data_inicial="03/01/2011", data_final="08/08/2023"):  
+  def busca_bcb_indices(self, indice="selic", data_inicial="03/01/2020", data_final="08/08/2023"):  
     if indice=='selic_anual':
       url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
+    elif indice=='selic_meta':
+      url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
     elif indice=='cdi':
       url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
     elif indice=='ipca':
-      url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.12061/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
+      url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
     else: #selic
       url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=csv&dataInicial="+data_inicial+"&dataFinal="
     
@@ -40,6 +42,54 @@ class Tesouro:
     df = df.set_index('data')
     df['selic dia'] = round(pow((1+df['valor']/100), 1/252), 8)-1
     return df
+
+
+  #####
+  ## BUSCA SELIC META ATUAL
+  def busca_selic_meta_atual(self):
+      hoje = datetime.today()
+      data_inicial = hoje - relativedelta(days=10)
+      data_inicial = data_inicial.strftime('%d/%m/%Y')
+      df = self.busca_bcb_indices(indice='selic_meta', data_inicial=data_inicial, data_final=hoje.strftime('%d/%m/%Y'))
+      return round(float(df.iloc[-1]['valor']),2)
+
+
+  #####
+  ## BUSCA IPCA ACUMULADO 12 MESES
+  def busca_ipca_12meses(self):
+      hoje = datetime.today()
+      data_inicial = hoje - relativedelta(months=14)
+      data_inicial = data_inicial.strftime('%d/%m/%Y')
+      df = self.busca_bcb_indices(indice='ipca', data_inicial=data_inicial, data_final=hoje.strftime('%d/%m/%Y'))
+
+      lst = df.tail(12)['valor']
+      resultado = 1
+      for numero in lst:
+          resultado *= 1+numero/100
+
+      mes = df.index[-1].strftime('%m/%Y')
+      ultimo = round(float(df.iloc[-1]['valor']),2)
+      doze = round((resultado-1)*100,2)
+      return mes, ultimo, doze
+
+  #####
+  ## CALCULA IMPOSTO CONFORME OS DIAS CORRIDOS
+  # Aplicações de até 180 dias: 22,5%; 
+  # Aplicações entre 181 e 360 dias: 20%; 
+  # Aplicações entre 361 e 720 dias: 17,5%; 
+  # Aplicações maiores do que 720 dias: 15%. 
+  # calcula o imposto com base nos dias corridos
+  def calcula_imposto(self, data_inicial, data_final):
+    dias = (datetime.strptime(data_final, "%Y-%m-%d").date() - datetime.strptime(data_inicial, "%Y-%m-%d").date()).days
+    if dias < 180:
+        imposto = 0.225
+    elif dias < 360:
+        imposto = 0.2
+    elif dias < 720:
+        imposto = 0.175
+    else:
+        imposto = 0.15
+    return imposto, dias
 
 
   ######
