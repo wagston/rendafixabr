@@ -10,7 +10,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="rendafixabr",
-    version="0.1.2",
+    version="0.1.3",
     author="Wagston Staehler",
     author_email="wagston.staehler@gmail.com",
     description="Funções para coletar dados e gerar análises simples dos títulos públicos brasileiros",

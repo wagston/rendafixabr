@@ -3,7 +3,7 @@ Funções para coletar dados e gerar análises simples dos títulos públicos br
 
 ### Instalação
 ```
-pip install git+https://github.com/wagston/rendafixabr@0.1.2
+pip install git+https://github.com/wagston/rendafixabr@0.1.3
 ```
 
 ### Uso
